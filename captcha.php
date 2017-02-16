@@ -1,6 +1,6 @@
 <?php
 /**
- * Script para la generaci�n de CAPTCHAS
+ * Script para la generación de CAPTCHAS
  *
  * @author  Jose Rodriguez <josecl@gmail.com>
  * @license GPLv3
@@ -201,11 +201,22 @@ class SimpleCaptcha {
         $this->ImageAllocate();
         
         /** Text insertion */
-        $text = $this->GetCaptchaText();
+        //$text = $this->GetCaptchaText();
+        
+        //$this->WriteText($text, $fontcfg);
+        //$_SESSION[$this->session_var] = $text;
+        
         $fontcfg  = $this->fonts[array_rand($this->fonts)];
-        $this->WriteText($text, $fontcfg);
+        
+        
+        //++++++++++++++++++++++++++++ подключаем математику? в принимаемом массиве $text[] слагаемые и результат 
+        
+        $text = $this->GetMatchCaptchaText();
+       
+        
+        $this->WriteText($text[0].' + '.$text[1], $fontcfg);
 
-        $_SESSION[$this->session_var] = $text;
+        $_SESSION[$this->session_var] = $text[2];
 
         /** Transformations */
         if (!empty($this->lineWidth)) {
@@ -290,6 +301,21 @@ class SimpleCaptcha {
     }
 
 
+ /**
+     * Добавляем простое сложение, слагаемые и сумма выводятся в массиве, поэтому нужно будет править функцию создания картинки
+     *
+     * @return array Text
+     */  
+    protected function GetMatchCaptchaText() {
+
+		$d1 = mt_rand(1,9);
+		$d2 = mt_rand(1,9);
+
+        $text[0]  = $d1;
+        $text[1]  = $d1;
+        $text[2]  = $d1+$d2;
+        return $text;
+    }
 
 
 
@@ -476,7 +502,7 @@ class SimpleCaptcha {
      * Reduce the image to the final size
      */
     protected function ReduceImage() {
-        // Reduzco el tama�o de la imagen
+        // Reduzco el tamaño de la imagen
         $imResampled = imagecreatetruecolor($this->width, $this->height);
         imagecopyresampled($imResampled, $this->im,
             0, 0, 0, 0,
